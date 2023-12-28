@@ -60,6 +60,8 @@ def main():
     MovieQuestions = ["A könyv neve/Name of the book:", "A könyv szerzője/Author of the Book:", "3 betűs rövidítés/3 char abbreviation:","Tulajdonos/Owner:", "Kategória/Category:",
                       "Feltöltési dátum/LogDate", "Alá van írva/Is it dedicated?", "Leírása/Description:", "Értékelés/Rating:","Kiadó/Publisher:", "Elérési útja/Location Path:"]
     
+    
+    
     for i in range(len(MovieQuestions)):     
         MovieNameVar = tk.StringVar()
         MovieNameVar.set(MovieQuestions[i])
