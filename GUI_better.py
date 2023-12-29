@@ -14,7 +14,7 @@ class GUIInterface:
     
     def __init__(self):
         self.DisplayTitle()
-        self.DisplayQuestions()
+        #self.DisplayQuestions()
 
     
     def DisplayTitle(self):

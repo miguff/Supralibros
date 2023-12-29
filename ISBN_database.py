@@ -13,12 +13,12 @@ from urllib.request import urlopen
 
 # sample ISBN for testing: 1593276036
 ISBN = 9781617294433
-while True:
 
+def ISBNLookUp(ISBNNumber):
     # create getting started variables
     api = "https://www.googleapis.com/books/v1/volumes?q=isbn:"
-    isbn = input("Enter 10 digit ISBN: ").strip()
-
+    isbn = str(ISBNNumber)
+    
     # send a request and get a JSON response
     resp = urlopen(api + isbn)
     # parse JSON into Python as a dictionary
@@ -39,9 +39,5 @@ while True:
     print(f"Publication Date: {volume_info['publishedDate']}")
     print("\n***\n")
 
-    # ask user if they would like to enter another isbn
-    user_update = input("Would you like to enter another ISBN? y or n ").lower().strip()
 
-    if user_update != "y":
-        print("May the Zen of Python be with you. Have a nice day!")
-        break # as the name suggests, the break statement breaks out of the while loop
+ISBNLookUp(ISBN)
