@@ -12,6 +12,7 @@ import sys
 import os
 import tkinter as tk
 from tkinter import filedialog as fd
+from GUI_better import RunGUI
 
 def main():
     
@@ -31,16 +32,21 @@ def main():
     SQLBooksTableCreation = """CREATE TABLE IF NOT EXISTS BOOKSTable (
         ID integer PRIMARY KEY,
         BookTitle text Not Null,
-        SpecialID text Not Null,
         AuthorID integer Not Null,
-        Owner text Not Null,
+        PublisherID integer Not Null,
+        PublicationaDate text,
         Category text,
+        Language text,
+        PageCount int,
+        Description text,
+        Type text,
+        ISBN text,
+        SpecialID text Not Null,
+        Owner text Not Null,
         LogDate text,
         Dedicated text,
-        Description text,
+        DedicateDescription text,
         Ratings integer,
-        PDFFile text,
-        PublisherID integer Not Null,
         FOREIGN KEY (AuthorID) REFERENCES AuthorTable (ID),
         FOREIGN KEY (PublisherID) REFERENCES PublisherTable (ID)
         );"""
@@ -50,53 +56,20 @@ def main():
     CreateTables(Connection, SQLBooksTableCreation)
     
     
-    #Create GUI for adding data to data database
-    global ListOfMovies
-    ListOfMovies = []
-    Window = tk.Tk()
-    Window.wm_title("Tölts fel adatot az Adatbázisba/Upload data to Database.")
-    
-    #Film neve - kérdés / Name of the movies - question
-    MovieQuestions = ["A könyv neve/Name of the book:", "A könyv szerzője/Author of the Book:", "3 betűs rövidítés/3 char abbreviation:","Tulajdonos/Owner:", "Kategória/Category:",
-                      "Feltöltési dátum/LogDate", "Alá van írva/Is it dedicated?", "Leírása/Description:", "Értékelés/Rating:","Kiadó/Publisher:", "Elérési útja/Location Path:"]
-    
-    
-    
-    for i in range(len(MovieQuestions)):     
-        MovieNameVar = tk.StringVar()
-        MovieNameVar.set(MovieQuestions[i])
-        Label = tk.Label(Window, textvariable=MovieNameVar, height = 2)
-        Label.grid(row=i,column=0)
-    
-    
+    ListOfMovies = RunGUI()
 
-    #Film neve - válasz / Name of the Movie - answer
-    for i in range(len(MovieQuestions)):
-        NameAnswer=tk.StringVar()
-        Box=tk.Entry(Window,bd=4,textvariable=NameAnswer)
-        Box.insert(0, "alma")
-        Box.grid(row=i,column=1)
-        ListOfMovies.append(Box)
-    
-    ButtonBrowseFile = tk.Button(Window,text="Browse File",command=lambda: browsefunc(Box))
-    ButtonBrowseFile.grid(row = i, column=2)
-    
-
-    ButtonAccept = tk.Button(Window, text = "Feltöltés/Upload", command=GetData)
-    ButtonAccept.grid(row=0,column=2)
-    
-    Window.mainloop()
+ 
        
     #Itt felvisszük a dolgokat
     Author = [ListOfMovies.pop(1)]
-    Publisher = [ListOfMovies.pop(-2)]   
+    Publisher = [ListOfMovies.pop(1)]   
    
     AuthorID = AddAuthor(Connection, Author)
     PublisherID = AddPublisher(Connection, Publisher)
     
     ListOfMovies.insert(len(ListOfMovies), int(AuthorID))
     ListOfMovies.insert(len(ListOfMovies), int(PublisherID))
-
+    print(ListOfMovies)
 
     Book = ListOfMovies
     AddBook(Connection, Book)
@@ -104,39 +77,6 @@ def main():
     SQL = """SELECT * FROM BOOKSTable"""
     df = pd.read_sql(SQL,Connection)
     print(df)
- 
-def browsefunc(ent1):
-    """
-    
-
-    Parameters
-    ----------
-    ent1 : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    None.
-
-    """
-    filename =fd.askopenfilename(filetypes=(("pdf files","*.pdf"),("All files","*.*")))
-    ent1.insert(tk.END, filename) # add this
-    
- 
-def GetData():
-    """
-    
-
-    Returns
-    -------
-    None.
-
-    """
-    for i in range(len(ListOfMovies)):
-        ListOfMovies[i] = ListOfMovies[i].get()
-    print("Elvégeztem a szükséges műveletet")
-    #l.append(box.get())
-    #print(l)    
 
 
 def AddAuthor(conn, Value):
@@ -213,22 +153,27 @@ def AddBook(conn, Values: list):
 
     """
 
-    SQL_row = f"SELECT * FROM BOOKSTable WHERE Owner = '{Values[2].upper()}'"
+    SQL_row = f"SELECT * FROM BOOKSTable WHERE Owner = '{Values[-7].upper()}'"
     DfMeglevo = pd.read_sql(SQL_row, conn)
     Cursor = conn.cursor()
     Cursor.execute(SQL_row)
     conn.commit()
     NumberOfOwnerBook = len(DfMeglevo) + 1
 
+    #Speciális ID értéke / Special ID
+    Values[-8] = f"{Values[-8].upper()}{NumberOfOwnerBook}"
     
-    Values[1] = f"{Values[1].upper()}{NumberOfOwnerBook}"
+    #A könyv címe / Title of the Book
     Values[0] = Values[0].upper()
+
+    #A könyv tulajdonosa / Owner of the book
     Values[2] = Values[2].upper()
 
     
-    SQLInsert = """INSERT INTO BooksTable(BookTitle, SpecialID,
-     Owner, Category, LogDate, Dedicated, Description, Ratings, PDFFile, AuthorID, PublisherID)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    SQLInsert = """INSERT INTO BooksTable(BookTitle, PublicationaDate, Category, Language, 
+    PageCount, Description, Type, ISBN, SpecialID, Owner,  
+    LogDate, Dedicated, DedicateDescription, Ratings, AuthorID, PublisherID)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     """
     
     

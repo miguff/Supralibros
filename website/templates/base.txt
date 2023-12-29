@@ -1,0 +1,16 @@
+Ami a base.html file-ban van, az lesz az alapja az össze weboldalnak is.
+És ahogy fejlesztük, úgy fogjuk felülírni a base.html az adott tészegben ahol kell
+
+Ezeket a block részleteket tudja  külön felülírni, módosítani a többi html file
+
+Ha a saját JavaScript-ünket akarnánk beletennei, akkor a static folderbe tennénk bele. Képeket is, CSS-t is, JavaScript-et is, oda kell tenni.
+Így kéne betölni:
+
+<script
+    type="text/javascript"
+    src="{{ url_for('static', filename='index.js') }}"
+></script>
+
+A navBart meg a többi dolgot a Bootstap website-ról van szedve és mindent meglehet nézni ott, hogy mi hogyan működik és lehet vele játszani.
+
+A videóban a 40:43-nál tartottam 2023-12-29-kor
